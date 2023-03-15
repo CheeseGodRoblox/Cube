@@ -1,0 +1,40 @@
+{
+  "name": "Cube",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "Common": {
+        "$path": "src/shared"
+      },
+
+      "Packages": {
+        "$path": "Packages"
+      }
+    },
+
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        },
+
+        "Controllers": {
+          "$path": "src/controllers"
+        }
+      }
+    },
+
+    "ServerStorage": {
+      "Services": {
+        "$path": "src/services"
+      }
+    }
+  }
+}
