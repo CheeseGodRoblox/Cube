@@ -87,6 +87,8 @@ function CubeRuntimeController:_PlayCubeTransformationCutscene(camera, cube, cha
     local cubeRotationTween = TweenService:Create(cubePart, cubeRotationTweenInfo, cubeRotationTweenGoal)
     cubeRotationTween:Play()
 
+    cubeRotationTween.Completed:Wait()
+
     local cameraView = Instance.new("Part")
     cameraView.Anchored = true
     cameraView.CanCollide = false

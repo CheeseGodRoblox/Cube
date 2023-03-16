@@ -6,15 +6,23 @@
     ### 📃Description:
     This manages the screen shake that is based on the proximity of the player and the cube.
 
+    ### ⚙️Dependencies:
+    * ScreenShakeController
 ]=]
 
 --Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 
 --Modules
 local Packages = ReplicatedStorage:WaitForChild("Packages")
 local Knit = require(Packages.Knit)
 local Shake = require(Packages.Shake)
+
+local player = Players.LocalPlayer
+local PlayerScripts = player.PlayerScripts
+local Controllers = PlayerScripts.Controllers
+local ScreenShakeController = require(Controllers.ScreenShakeController)
 
 local CubeScreenShakeController = Knit.CreateController { Name = "CubeScreenShakeController" }
 
@@ -52,57 +60,35 @@ function CubeScreenShakeController:KnitInit()
 
     coroutine.resume(startConstantShake)
 
-    local function constantShake()
-        local camCf = camera.CFrame
-        local shake = Shake.new()
-        shake.FadeInTime = 0
-        shake.Frequency = .05
-        shake.RotationInfluence = Vector3.new(.1, .1, .1)
-        shake.Sustain = true
-        shake:Start()
-
-        shake:BindToRenderStep("ConstantCubeShake", Enum.RenderPriority.Last.Value, function(pos, rot, done)
-            local distance = (camera.CFrame.Position - cube.PrimaryPart.Position).Magnitude / 100
-            pos = (Shake.InverseSquare(pos, distance)) / 12.5
-            rot = (Shake.InverseSquare(rot, distance)) / 12.5
-            camera.CFrame = camera.CFrame * CFrame.new(pos) * CFrame.Angles(rot.X, rot.Y, rot.Z)
-
-            if done then
-                camera.CFrame = camCf
-            end
-
-        end)
-    end
-
-    constantShake()
-
-    -- CubeScreenShakeController._ConstantShake(cube, camera)
+    self._constantShake = self._StartConstantShake(nil, cube, camera)
 
 end
 
--- function CubeScreenShakeController:_ConstantShake(cube, camera)
---     print(cube, camera)
+function CubeScreenShakeController:_StartConstantShake(cube, camera)
+    local camCf = camera.CFrame
+    local constantShake = ScreenShakeController.New(nil, 0, nil, .05, nil, Vector3.new(.1, .1, .1), true)
+    constantShake:Start()
 
---     local camCf = camera.CFrame
---     local shake = Shake.new()
---     shake.FadeInTime = 0
---     shake.Frequency = .05
---     shake.RotationInfluence = Vector3.new(.1, .1, .1)
---     shake.Sustain = true
---     shake:Start()
+    return constantShake
 
---     shake:BindToRenderStep("ConstantCubeShake", Enum.RenderPriority.Last.Value, function(pos, rot, done)
---         local distance = (camera.CFrame.Position - cube.PrimaryPart.Position).Magnitude / 100
---         pos = (Shake.InverseSquare(pos, distance)) / 12.5
---         rot = (Shake.InverseSquare(rot, distance)) / 12.5
---         camera.CFrame = camera.CFrame * CFrame.new(pos) * CFrame.Angles(rot.X, rot.Y, rot.Z)
+    -- self._constantShake:BindToRenderStep("ConstantCubeShake", Enum.RenderPriority.Last.Value, function(pos, rot, done)
+    --     local distance = (camera.CFrame.Position - cube.PrimaryPart.Position).Magnitude / 100
+    --     pos = (Shake.InverseSquare(pos, distance)) / 12.5
+    --     rot = (Shake.InverseSquare(rot, distance)) / 12.5
+    --     camera.CFrame = camera.CFrame * CFrame.new(pos) * CFrame.Angles(rot.X, rot.Y, rot.Z)
 
---         if done then
---             camera.CFrame = camCf
---         end
+    --     if done then
+    --         camera.CFrame = camCf
+    --     end
+    -- end)
+end
 
---     end)
--- end
+function CubeScreenShakeController:_PauseConstantShake()
+    if self._constantShake then
+        self._constantShake:Stop()
+    end
+end
+
 
 
 return CubeScreenShakeController
